@@ -77,3 +77,18 @@
 # 期待您更多的意见
 
 > 如果你有任何的想法或是建议那就给我留个言吧
+#客户端监听配置
+执行机客户端目录:F:\LuckyFrameClient\TestDriven
+默认驱动路径:/TestDriven
+
+#用例执行
+> 新增测试计划--关联测试用例
+添加任务调度--关联测试项目:测试计划
+
+#测试报告邮件配置
+>smtp邮件ssl连接开启 例：true false ---开启QQ邮箱的SMTP功能ssl设置false  
+mail.smtp.ssl.enable=false
+>smtp邮件用户名
+mail.smtp.username=1075630467@qq.com
+>smtp邮件用户密码
+mail.smtp.password=hnguklgmcwbzfhih
