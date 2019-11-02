@@ -1,24 +1,19 @@
 package springboot;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.rmi.RemoteException;
-import java.util.Properties;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import luckyclient.caserun.exappium.AppTestControl;
+import luckyclient.caserun.exinterface.TestControl;
+import luckyclient.caserun.exwebdriver.WebTestControl;
+import luckyclient.publicclass.LogUtil;
+import luckyclient.publicclass.SysConfig;
+import luckyclient.publicclass.remoterinterface.HttpRequest;
+import luckyclient.serverapi.api.GetServerApi;
+import luckyclient.serverapi.entity.TaskExecute;
+import luckyclient.serverapi.entity.TaskScheduling;
+import luckyclient.serverapi.entity.monitor.Server;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,16 +21,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
-import luckyclient.publicclass.SysConfig;
-import luckyclient.publicclass.remoterinterface.HttpRequest;
-import luckyclient.serverapi.entity.monitor.Server;
 import springboot.model.RunBatchCaseEntity;
 import springboot.model.RunTaskEntity;
 import springboot.model.WebDebugCaseEntity;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.*;
+import java.rmi.RemoteException;
+import java.util.Properties;
 
 /**
  * =================================================================
@@ -53,7 +49,6 @@ public class HttpImpl {
 	/**
 	 * 运行自动化任务
 	 * @param req
-	 * @param res
 	 * @return
 	 * @throws RemoteException
 	 */
@@ -85,11 +80,32 @@ public class HttpImpl {
 			Runtime run = Runtime.getRuntime();
 			StringBuffer sbf=new StringBuffer();
 			sbf.append(runTaskEntity.getTaskId()).append(" ");
+			String taskid = runTaskEntity.getTaskId();//debug调用模式：获取任务id taskid
 			sbf.append(runTaskEntity.getLoadPath());
 			log.info("启动任务模式测试程序...调度名称:【{}】  任务ID:【{}】",runTaskEntity.getSchedulingName(),runTaskEntity.getTaskId());
 			if(OS.startsWith("win")){
 				log.info("开始调起windows命令行窗口...");
-				run.exec("cmd.exe /k start " + "task.cmd" +" "+ sbf.toString(), null,new File(System.getProperty("user.dir")+File.separator));
+//				run.exec("cmd.exe /k start " + "task.cmd" +" "+ sbf.toString(), null,new File(System.getProperty("user.dir")+File.separator));
+
+				//debug代码调用模式----begin
+				try {
+					PropertyConfigurator.configure(System.getProperty("user.dir") + File.separator + "log4j.conf");//debug 本地配置文件路径：\src\main\Resources\
+					TaskExecute task = GetServerApi.cgetTaskbyid(Integer.valueOf(taskid));
+					TaskScheduling taskScheduling = GetServerApi.cGetTaskSchedulingByTaskId(Integer.valueOf(taskid));
+					if (taskScheduling.getTaskType() == 0) {
+						// 接口测试
+						TestControl.taskExecutionPlan(task);
+					} else if (taskScheduling.getTaskType() == 1) {
+						// UI测试
+						WebTestControl.taskExecutionPlan(task);
+					} else if (taskScheduling.getTaskType() == 2) {
+						AppTestControl.taskExecutionPlan(task);
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					LogUtil.APP.error("启动测试任务运行主函数出现异常，请检查！", e);
+				}//debug代码调用模式-----end
+
 				log.info("调起windows命令行窗口完成...");
 			}else{
 				log.info("开始调起Linux命令脚本...");
@@ -103,7 +119,7 @@ public class HttpImpl {
 		}
 		return "启动任务模式测试程序正常";
 	}
-	
+
 	/**
 	 * 批量运行用例
 	 * @param req

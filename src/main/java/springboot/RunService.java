@@ -1,14 +1,14 @@
 package springboot;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * =================================================================
@@ -25,7 +25,7 @@ public class RunService {
 	private static final Logger log = LoggerFactory.getLogger(RunService.class);
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		PropertyConfigurator.configure(System.getProperty("user.dir") + File.separator +"bootlog4j.conf");
+		PropertyConfigurator.configure(System.getProperty("user.dir") + File.separator + "bootlog4j.conf");//Ä¬ÈÏÂ·¾¶user.dir
 		SpringApplication.run(RunService.class, args);
         try {
         	String host = InetAddress.getLocalHost().getHostAddress();

@@ -77,9 +77,14 @@
 # 期待您更多的意见
 
 > 如果你有任何的想法或是建议那就给我留个言吧
-#客户端监听配置
+#客户端管理监听配置
 执行机客户端目录:F:\LuckyFrameClient\TestDriven
 默认驱动路径:/TestDriven
+
+#客户端执行机配置：
+F:\LuckyFrameClient\sys_config.properties：
+server.web.port=8083 #服务端对外服务的端口
+
 
 #用例执行
 > 新增测试计划--关联测试用例

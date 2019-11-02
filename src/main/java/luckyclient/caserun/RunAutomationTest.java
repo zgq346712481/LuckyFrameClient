@@ -1,9 +1,5 @@
 package luckyclient.caserun;
 
-import java.io.File;
-
-import org.apache.log4j.PropertyConfigurator;
-
 import luckyclient.caserun.exappium.AppTestControl;
 import luckyclient.caserun.exinterface.TestControl;
 import luckyclient.caserun.exwebdriver.WebTestControl;
@@ -11,6 +7,9 @@ import luckyclient.publicclass.LogUtil;
 import luckyclient.serverapi.api.GetServerApi;
 import luckyclient.serverapi.entity.TaskExecute;
 import luckyclient.serverapi.entity.TaskScheduling;
+import org.apache.log4j.PropertyConfigurator;
+
+import java.io.File;
 
 /**
  * =================================================================
@@ -25,9 +24,11 @@ import luckyclient.serverapi.entity.TaskScheduling;
  */
 public class RunAutomationTest extends TestControl {
 	public static void main(String[] args) {
+//	public static void runAutomationTestdebug(String taskid) {
+
 		// TODO Auto-generated method stub
 		try {
-			PropertyConfigurator.configure(System.getProperty("user.dir") + File.separator + "log4j.conf");
+			PropertyConfigurator.configure(System.getProperty("user.dir") + File.separator + "log4j.conf");//debug 本地配置文件路径：\src\main\Resources\
 			String taskid = args[0];
 			TaskExecute task = GetServerApi.cgetTaskbyid(Integer.valueOf(taskid));
 			TaskScheduling taskScheduling = GetServerApi.cGetTaskSchedulingByTaskId(Integer.valueOf(taskid));
